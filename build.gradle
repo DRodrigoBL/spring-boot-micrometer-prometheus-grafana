@@ -1,0 +1,141 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.4.21'
+        springBootVersion = '2.1.1.RELEASE'
+    }
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.15.0")
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
+apply plugin: "io.gitlab.arturbosch.detekt"
+
+group = 'com.rappi.partners'
+version = '0.0.1'
+sourceCompatibility = 1.8
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven {
+        url "https://bitbucket.org/grability/snapshots/raw/snapshots"
+        credentials {
+            username "$System.env.USERNAME_REPOSITORY"
+            password "$System.env.PASSWORD_REPOSITORY"
+        }
+
+        authentication {
+            basic(BasicAuthentication)
+        }
+    }
+}
+
+
+dependencies {
+    // Spring
+    implementation('org.springframework.boot:spring-boot-starter-web') {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    implementation("org.springframework.boot:spring-boot-starter-jetty")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.1.1")
+//    runtime("io.micrometer:micrometer-registry-prometheus:1.5.12")
+    //implementation('org.springframework.boot:spring-boot-starter-jdbc')
+    //implementation('org.springframework.kafka:spring-kafka')
+    //implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    //implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
+
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    implementation('com.fasterxml.jackson.module:jackson-module-kotlin:2.9.0')
+
+    //runtime('org.postgresql:postgresql')
+
+    //implementation "org.flywaydb:flyway-core:5.2.3"
+
+    // Testing
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('com.h2database:h2:1.4.200')
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
+    //implementation 'com.google.firebase:firebase-admin:5.9.0'
+
+    // Rx
+    implementation "io.reactivex.rxjava2:rxjava:2.1.12"
+
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.4.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
+
+    // Redis
+    //implementation('redis.clients:jedis:2.9.0')
+
+    //Amazon S3
+    //implementation 'com.amazonaws:aws-java-sdk-s3:1.11.210'
+
+    //Google Api for phones validation
+    //compile 'com.googlecode.libphonenumber:libphonenumber:8.11.1'
+
+    //Rappi
+    //compile 'com.rappi:apm:0.1.0-SNAPSHOT'
+
+    //Spring Doc
+    //implementation 'org.springdoc:springdoc-openapi-ui:1.4.8'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+
+detekt {
+    toolVersion = "1.15.0"
+    input = files("src/main/kotlin")
+    buildUponDefaultConfig = true
+    ignoreFailures = true
+    reports {
+        xml {
+            enabled = true
+            destination = file("build/reports/detekt.xml")
+        }
+        html {
+            enabled = true
+            destination = file("build/reports/detekt.html")
+        }
+        txt {
+            enabled = true
+            destination = file("build/reports/detekt.txt")
+        }
+    }
+}

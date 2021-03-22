@@ -5,8 +5,6 @@ services:
         container_name: rest-api-monitoring
         ports:
             - "8080:8080"
-        volumes:
-            - ./application.properties:/app/application.properties
         hostname: rest-api-monitoring
 
     prometheus:

@@ -16,15 +16,17 @@ class DummyService(val meterRegistry: MeterRegistry) {
 
     @PostConstruct
     fun initCounters() {
-        toggleStoreOnCounter = Counter.builder("toggle.store")
-            .tag("toggle-type", "on")
-            .description("Turn on store")
-            .register(meterRegistry)
-
-        toggleStoreOffCounter = Counter.builder("toggle.store")
-            .tag("toggle-type", "off")
-            .description("Turn off store")
-            .register(meterRegistry)
+        toggleStoreOnCounter = this.meterRegistry.counter("toggle.store", "toggle-type", "on", "origin", "tablet")
+        toggleStoreOffCounter = this.meterRegistry.counter("toggle.store", "toggle-type", "off")
+//        toggleStoreOnCounter = Counter.builder("toggle.store")
+//            .tag("toggle-type", "on")
+//            .description("Turn on store")
+//            .register(meterRegistry)
+//
+//        toggleStoreOffCounter = Counter.builder("toggle.store")
+//            .tag("toggle-type", "off")
+//            .description("Turn off store")
+//            .register(meterRegistry)
     }
 
     fun toggleStore(value: Int) {
